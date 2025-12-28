@@ -1,56 +1,38 @@
 ---
-description: Morning kickoff. Sets intentions and MIT for the day.
+description: Morning. One commitment. 30 seconds.
 ---
-
-Read CLAUDE.md for full guidance.
 
 ## Context
 
-Run: `date '+%A %B %d, %Y %H:%M'`
-
-Read silently: CLAUDE.md ("About Me" and "Now" sections), recent journals.
+Read silently: CLAUDE.md, projects.md, commitments.md (check for repeated misses).
 
 ## Ask
 
-"What's your one thing today?"
+"What's your ONE commitment today?"
 
-That's it. Wait.
+Wait.
 
 ## After they answer
 
-- Create/update journal (`journal/YYYY-MM-DD.md`)
-- Update "Now" section in CLAUDE.md with their MIT
+1. Add to commitments.md:
+   | [today's date] | [their commitment] | — | — |
 
-Journal:
-```markdown
-# YYYY-MM-DD (Day)
+2. Update projects.md if this moves a project (update Last Touched date)
 
-## Morning
-**MIT:** [their one thing]
+3. Update journal/YYYY-MM-DD.md:
+   ```
+   # YYYY-MM-DD
+   ## Commitment
+   [their commitment]
+   ```
 
-## Notes
+4. Update Now section in CLAUDE.md with MIT
 
-## Evening
-```
+## If pattern
 
-## Connect (if appropriate)
-
-If "About Me" has a mission, connect briefly:
-"That moves you toward [their mission]."
+Same commitment 3+ days in a row without completion:
+"You've committed to this [X] times without doing it. What's the actual blocker?"
 
 ## Close
 
-Short:
-- "Go."
-- "One thing. Get it done."
-- "[X] days left. Back to it."
-
-## Observe (don't output)
-
-Notice:
-- Energy in their words
-- Hesitation
-- Same MIT as yesterday?
-- Avoiding something?
-
-If pattern (3x+), mention it: "This is the third time you've set this. What's in the way?"
+"Go."

@@ -1,47 +1,29 @@
 ---
-description: Quick check-in anytime. Updates files, keeps you accountable.
+description: Quick check. Are you on track?
 ---
-
-Read CLAUDE.md for full guidance.
 
 ## Context
 
-Run: `date '+%A %B %d, %Y %H:%M'`
-
-Read silently: CLAUDE.md ("About Me" and "Now" sections), today's journal.
+Read silently: today's commitment from commitments.md.
 
 ## Ask
 
-"What are you doing right now?"
+"You committed to [X]. Are you on it?"
 
 Wait.
 
 ## Respond
 
-See CLAUDE.md "Handling Key Situations" for full guidance.
+- On track: "Good. Back to it."
+- Off track: "What happened?"
+- Stuck: "What's the smallest next step?"
 
-**Quick reference:**
-
-| They're... | You... |
-|------------|--------|
-| On track | "Good. Keep going." |
-| Off track | "Is this your one thing?" |
-| Stuck | "What's the blocker?" |
-| Procrastinating | "What's the resistance?" |
-| Venting | Listen, then "Want me to save that?" |
-| Lost | "What actually matters right now?" |
-| On fire | Stay out of the way |
-
-## Update (if needed)
+## Update
 
 Only if something changed:
-- "Now" section in CLAUDE.md: new focus, blocker, win
-- "About Me" section in CLAUDE.md: new pattern (ask first)
-- journal: notable moment
+- If they pivoted, update commitments.md with note
+- If blocker, note in journal
 
 ## Close
 
-Fast:
-- "Back to it."
-- "Need anything else?"
-- "[X] days left."
+"Go."
