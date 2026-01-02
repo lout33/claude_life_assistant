@@ -102,6 +102,16 @@ Symbiotic agent. Deep integration — shared context, coordinated thinking, auto
 | Flow | [time] | [Execution, coding, creating] |
 | Recovery | [time] | [Rest, recharge, reflect] |
 
+## File Locations
+
+*Set automatically by install script. Do not edit manually.*
+
+| What | Where |
+|------|-------|
+| This file | `[set by install]` |
+| Dynamic state | `[set by install]` |
+| Commands | `[set by install]` |
+
 ---
 
 *End of stable config. See `NOW.md` for current state.*

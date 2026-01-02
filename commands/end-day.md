@@ -2,7 +2,9 @@
 description: Evening review. Captures wins, lessons, and prep for tomorrow.
 ---
 
-Read CLAUDE.md and NOW.md for full context.
+## File Locations
+
+First, read the main config file (CLAUDE.md or AGENTS.md) and find the `## File Locations` section. Use those paths when reading/updating files. If not found, default to current directory.
 
 ## Context
 
@@ -10,7 +12,7 @@ Run: `date '+%A %B %d, %Y %H:%M'`
 
 If before 6pm: "Closing out early?"
 
-Read silently: CLAUDE.md (stable identity), NOW.md (current state).
+Read silently: CLAUDE.md/AGENTS.md (stable identity), NOW.md (current state).
 
 ## Ask
 

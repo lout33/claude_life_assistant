@@ -122,6 +122,40 @@ if [ -f "$TARGET_CLAUDE" ]; then
     echo "  To append, run: cat $TMP_DIR/CLAUDE.md >> $TARGET_CLAUDE"
 else
     cp "$TMP_DIR/CLAUDE.md" "$TARGET_CLAUDE"
+    
+    # Append File Locations section based on install target
+    if [ "$TARGET_NAME" = "Claude Code" ]; then
+        cat >> "$TARGET_CLAUDE" << 'EOF'
+
+## File Locations
+| What | Where |
+|------|-------|
+| This file | `~/.claude/CLAUDE.md` |
+| Dynamic state | `~/.claude/NOW.md` |
+| Commands | `~/.claude/commands/` |
+EOF
+    elif [ "$TARGET_NAME" = "OpenCode" ]; then
+        cat >> "$TARGET_CLAUDE" << 'EOF'
+
+## File Locations
+| What | Where |
+|------|-------|
+| This file | `~/.config/opencode/AGENTS.md` |
+| Dynamic state | `~/.config/opencode/NOW.md` |
+| Commands | `~/.config/opencode/command/` |
+EOF
+    else
+        cat >> "$TARGET_CLAUDE" << 'EOF'
+
+## File Locations
+| What | Where |
+|------|-------|
+| This file | `./CLAUDE.md` |
+| Dynamic state | `./NOW.md` |
+| Commands | `./commands/` |
+EOF
+    fi
+    
     echo -e "${GREEN}✓ Copied $CLAUDE_FILE${NC}"
 fi
 

@@ -6,6 +6,19 @@ description: First-time setup. Creates CLAUDE.md and NOW.md through a 5-minute c
 
 You're setting up a new user's 2-file system (CLAUDE.md + NOW.md). This is one-time onboarding.
 
+## IMPORTANT: File Locations
+
+**Before doing anything else**, read the current file you're in (CLAUDE.md or AGENTS.md) and look for the `## File Locations` section. 
+
+This section tells you where to save files:
+- `This file` → Path to CLAUDE.md/AGENTS.md
+- `Dynamic state` → Path to NOW.md  
+- `Commands` → Path to commands folder
+
+**Use these exact paths when updating files.** Do not assume paths.
+
+If no File Locations section exists, ask: "Where did you install Claude Life Assistant? (e.g., ~/.claude, ~/.config/opencode, or current directory)"
+
 ## Your approach
 
 Be warm but efficient. This isn't therapy — it's setup. Get the essential info to make the symbiotic system work.
@@ -73,7 +86,9 @@ What are 2-3 modes that describe how you work?"
 
 ## Create CLAUDE.md
 
-Create `CLAUDE.md` with this structure:
+**IMPORTANT:** Use the paths from the `## File Locations` section you read earlier. Update the existing file at that path, don't create a new one in a different location.
+
+Update the existing CLAUDE.md/AGENTS.md with this structure:
 
 ```markdown
 # CLAUDE.md — [Name] + Agent OS
@@ -149,6 +164,8 @@ Personal coach living in this filesystem. Grows with [Name] over time.
 - Generic default → *"Is this what you actually want, or what you think you should want?"*
 
 ## Create NOW.md
+
+**IMPORTANT:** Use the paths from the `## File Locations` section. Create NOW.md at the `Dynamic state` path specified.
 
 Create `NOW.md` with this structure:
 
