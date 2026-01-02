@@ -53,7 +53,15 @@ if [ "$CLAUDE_CODE" = true ] && [ "$OPENCODE" = true ]; then
     echo "  2) OpenCode (~/.config/opencode/)"
     echo "  3) Current directory (local project)"
     echo ""
-    read -p "Choose [1/2/3]: " choice
+    
+    # Read from /dev/tty to handle curl | bash
+    if [ -e /dev/tty ]; then
+        read -p "Choose [1/2/3]: " choice < /dev/tty
+    else
+        echo "Non-interactive mode. Defaulting to current directory."
+        choice=3
+    fi
+    
     case $choice in
         1)
             TARGET="$HOME/.claude"
