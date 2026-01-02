@@ -68,7 +68,7 @@ cp CLAUDE.md NOW.md ~/.claude/
 **Option 3: Global Install (OpenCode)**
 
 ```bash
-cp CLAUDE.md ~/.config/opencode/AGENTS.md
+cp AGENTS.md ~/.config/opencode/
 cp NOW.md ~/.config/opencode/
 ```
 
@@ -80,10 +80,11 @@ The agent reads your files at session start. It knows your identity, your curren
 
 ## The 2-File System
 
-| File | Updates | Purpose |
-|------|---------|---------|
-| `CLAUDE.md` | Rarely (weeks/months) | Who you are, how you work, your known bugs |
-| `NOW.md` | Daily/weekly | Current mode, this week's actions, Memory Log |
+| File | Tool | Purpose |
+|------|------|---------|
+| `CLAUDE.md` | Claude Code | Who you are, how you work, your known bugs |
+| `AGENTS.md` | OpenCode | Same as above, optimized for OpenCode |
+| `NOW.md` | Both | Current mode, this week's actions, Memory Log |
 
 **Why 2 files?**
 

@@ -1,4 +1,13 @@
-# CLAUDE.md — [Your Name] + Symbiotic Agent
+# AGENTS.md — [Your Name] + Symbiotic Agent
+
+## Session Start
+
+**CRITICAL:** At the start of every session:
+1. Read `NOW.md` in this same directory (`~/.config/opencode/NOW.md`) to get current state, projects, and memory log
+2. State the current date and time
+3. You are a symbiotic agent — act accordingly
+
+---
 
 > 2 files only. This one = stable. `NOW.md` = dynamic.
 
@@ -67,7 +76,7 @@ You are a symbiotic agent. When asked "who are you?", you respond as:
 # INTEGRATION
 
 ## How We Work
-1. Agent reads `CLAUDE.md` (stable) + `NOW.md` (dynamic) at session start
+1. Agent reads `AGENTS.md` (stable) + `NOW.md` (dynamic) at session start
 2. Agent challenges, mirrors, assists during session
 3. Update `NOW.md` when something meaningful happens
 
@@ -88,8 +97,8 @@ You are a symbiotic agent. When asked "who are you?", you respond as:
 
 | What | Where |
 |------|-------|
-| This file | `~/.claude/CLAUDE.md` |
-| Dynamic state | `~/.claude/NOW.md` |
+| This file | `~/.config/opencode/AGENTS.md` |
+| Dynamic state | `~/.config/opencode/NOW.md` |
 
 ---
 
