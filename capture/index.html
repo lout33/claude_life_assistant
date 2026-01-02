@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Capture</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0d1117;
+      color: #c9d1d9;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+      color: #58a6ff;
+    }
+
+    .setup, .capture { display: none; }
+    .setup.active, .capture.active { display: block; }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      margin-bottom: 6px;
+      color: #8b949e;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      background: #161b22;
+      color: #c9d1d9;
+      font-size: 16px;
+      margin-bottom: 16px;
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #58a6ff;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 6px;
+      background: #238636;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    button:hover { background: #2ea043; }
+    button:disabled { background: #21262d; color: #484f58; cursor: not-allowed; }
+
+    .status {
+      margin-top: 16px;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    .status.success { display: block; background: #1f352a; color: #3fb950; }
+    .status.error { display: block; background: #3d1f20; color: #f85149; }
+
+    .reset {
+      margin-top: 24px;
+      text-align: center;
+    }
+
+    .reset a {
+      color: #8b949e;
+      font-size: 0.8rem;
+      text-decoration: none;
+    }
+
+    .reset a:hover { color: #c9d1d9; }
+
+    .history {
+      margin-top: 24px;
+      border-top: 1px solid #30363d;
+      padding-top: 16px;
+    }
+
+    .history h2 {
+      font-size: 0.9rem;
+      color: #8b949e;
+      margin-bottom: 12px;
+    }
+
+    .history-item {
+      padding: 8px 0;
+      border-bottom: 1px solid #21262d;
+      font-size: 0.85rem;
+    }
+
+    .history-item .time {
+      color: #58a6ff;
+      font-size: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Setup Screen -->
+    <div class="setup" id="setup">
+      <h1>Setup Capture</h1>
+
+      <label for="token">GitHub Token (gist scope)</label>
+      <input type="password" id="token" placeholder="ghp_xxxxxxxxxxxx">
+
+      <label for="gistId">Gist ID</label>
+      <input type="text" id="gistId" placeholder="abc123def456...">
+
+      <button id="saveSetup">Save</button>
+
+      <div class="status" id="setupStatus"></div>
+    </div>
+
+    <!-- Capture Screen -->
+    <div class="capture" id="capture">
+      <h1>Capture</h1>
+
+      <textarea id="note" placeholder="What's happening?"></textarea>
+
+      <button id="send">Send</button>
+
+      <div class="status" id="captureStatus"></div>
+
+      <div class="history" id="historySection">
+        <h2>Today</h2>
+        <div id="history"></div>
+      </div>
+
+      <div class="reset">
+        <a href="#" id="resetSetup">Reset setup</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'life_capture_config';
+    const GIST_FILENAME = 'capture.md';
+
+    // Elements
+    const setupScreen = document.getElementById('setup');
+    const captureScreen = document.getElementById('capture');
+    const tokenInput = document.getElementById('token');
+    const gistIdInput = document.getElementById('gistId');
+    const saveSetupBtn = document.getElementById('saveSetup');
+    const setupStatus = document.getElementById('setupStatus');
+    const noteInput = document.getElementById('note');
+    const sendBtn = document.getElementById('send');
+    const captureStatus = document.getElementById('captureStatus');
+    const historyDiv = document.getElementById('history');
+    const resetLink = document.getElementById('resetSetup');
+
+    // State
+    let config = null;
+
+    // Init
+    function init() {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        config = JSON.parse(stored);
+        showCapture();
+        loadToday();
+      } else {
+        showSetup();
+      }
+    }
+
+    function showSetup() {
+      setupScreen.classList.add('active');
+      captureScreen.classList.remove('active');
+    }
+
+    function showCapture() {
+      setupScreen.classList.remove('active');
+      captureScreen.classList.add('active');
+    }
+
+    function showStatus(el, message, isError = false) {
+      el.textContent = message;
+      el.className = 'status ' + (isError ? 'error' : 'success');
+      setTimeout(() => { el.className = 'status'; }, 3000);
+    }
+
+    function getTimestamp() {
+      const now = new Date();
+      return now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function getDateKey() {
+      const now = new Date();
+      return now.toISOString().split('T')[0];
+    }
+
+    async function testConnection(token, gistId) {
+      const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+        headers: { 'Authorization': `token ${token}` }
+      });
+      return res.ok;
+    }
+
+    async function getGistContent() {
+      const res = await fetch(`https://api.github.com/gists/${config.gistId}`, {
+        headers: { 'Authorization': `token ${config.token}` }
+      });
+      if (!res.ok) throw new Error('Failed to fetch gist');
+      const data = await res.json();
+      return data.files[GIST_FILENAME]?.content || '';
+    }
+
+    async function updateGist(content) {
+      const res = await fetch(`https://api.github.com/gists/${config.gistId}`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `token ${config.token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          files: { [GIST_FILENAME]: { content } }
+        })
+      });
+      if (!res.ok) throw new Error('Failed to update gist');
+      return res.json();
+    }
+
+    async function loadToday() {
+      try {
+        const content = await getGistContent();
+        const dateKey = getDateKey();
+        const lines = content.split('\n');
+        const todayLines = [];
+        let inToday = false;
+
+        for (const line of lines) {
+          if (line.startsWith('## ' + dateKey)) {
+            inToday = true;
+            continue;
+          }
+          if (line.startsWith('## 20') && inToday) break;
+          if (inToday && line.trim()) {
+            todayLines.push(line);
+          }
+        }
+
+        historyDiv.innerHTML = todayLines.length
+          ? todayLines.map(l => {
+              const match = l.match(/^\*\*(\d{2}:\d{2})\*\* — (.+)$/);
+              if (match) {
+                return `<div class="history-item"><span class="time">${match[1]}</span> ${match[2]}</div>`;
+              }
+              return `<div class="history-item">${l}</div>`;
+            }).join('')
+          : '<div class="history-item" style="color:#484f58">No entries yet</div>';
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // Setup save
+    saveSetupBtn.addEventListener('click', async () => {
+      const token = tokenInput.value.trim();
+      const gistId = gistIdInput.value.trim();
+
+      if (!token || !gistId) {
+        showStatus(setupStatus, 'Both fields required', true);
+        return;
+      }
+
+      saveSetupBtn.disabled = true;
+      saveSetupBtn.textContent = 'Testing...';
+
+      try {
+        const ok = await testConnection(token, gistId);
+        if (!ok) throw new Error('Invalid');
+
+        config = { token, gistId };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+        showCapture();
+        loadToday();
+      } catch (e) {
+        showStatus(setupStatus, 'Invalid token or gist ID', true);
+      } finally {
+        saveSetupBtn.disabled = false;
+        saveSetupBtn.textContent = 'Save';
+      }
+    });
+
+    // Send note
+    sendBtn.addEventListener('click', async () => {
+      const note = noteInput.value.trim();
+      if (!note) return;
+
+      sendBtn.disabled = true;
+      sendBtn.textContent = 'Sending...';
+
+      try {
+        const content = await getGistContent();
+        const dateKey = getDateKey();
+        const timestamp = getTimestamp();
+        const entry = `**${timestamp}** — ${note}`;
+
+        let newContent;
+        if (content.includes(`## ${dateKey}`)) {
+          // Append to existing day
+          newContent = content.replace(
+            `## ${dateKey}`,
+            `## ${dateKey}\n${entry}`
+          );
+        } else {
+          // New day section at top
+          newContent = `## ${dateKey}\n${entry}\n\n${content}`;
+        }
+
+        await updateGist(newContent);
+        noteInput.value = '';
+        showStatus(captureStatus, 'Sent');
+        loadToday();
+      } catch (e) {
+        showStatus(captureStatus, 'Failed to send', true);
+        console.error(e);
+      } finally {
+        sendBtn.disabled = false;
+        sendBtn.textContent = 'Send';
+      }
+    });
+
+    // Reset
+    resetLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (confirm('Reset setup? You will need to enter token and gist ID again.')) {
+        localStorage.removeItem(STORAGE_KEY);
+        config = null;
+        showSetup();
+      }
+    });
+
+    // Enter to send
+    noteInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendBtn.click();
+      }
+    });
+
+    init();
+  </script>
+</body>
+</html>
