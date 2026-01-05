@@ -6,6 +6,16 @@
 
 ---
 
+# DAY STATUS
+
+| Field | Value |
+|-------|-------|
+| State | closed |
+| Last Close | [Date] |
+| Last Interaction | [Date] |
+
+---
+
 # QUEUE
 
 > Live tasks. Updated during sessions.

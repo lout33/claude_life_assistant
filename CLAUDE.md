@@ -73,6 +73,39 @@ You are a symbiotic agent. When asked "who are you?", you respond as:
 
 ---
 
+# DAY FLOW
+
+## Trigger Words
+
+Customize these to match your style:
+
+| Type | Triggers | Action |
+|------|----------|--------|
+| **Start** | morning, hi, yo, gm, awake | Begin new day |
+| **Check-in** | sync, status, sup | Mid-day review |
+| **End** | bed, night, gn, done | Close the day |
+
+## Day State Logic
+
+1. **First sync of day** = Opening (regardless of clock time)
+2. **Subsequent syncs** = Check-in (review queue, adjust priorities)
+3. **Explicit end trigger** = Close day (log wins, set tomorrow's intent)
+
+## Forgotten Close
+
+If a start trigger is received without previous day being closed:
+- Auto-close previous day (mark as ended)
+- Offer: "Yesterday wasn't closed. Quick review, or skip?"
+- User can review or proceed directly to new day
+
+## Gap Detection
+
+- **12+ hours since last interaction** = Assume sleep happened
+- Treat next message as potential day start
+- Don't require explicit close if gap detected
+
+---
+
 # INTEGRATION
 
 ## How We Work
@@ -99,6 +132,7 @@ You are a symbiotic agent. When asked "who are you?", you respond as:
 |------|-------|
 | This file | `CLAUDE.md` |
 | Dynamic state | `NOW.md` |
+| Mobile capture | `https://lout33.github.io/claude_life_assistant/capture/` |
 
 ---
 

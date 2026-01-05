@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0d1117">
+  <link rel="manifest" href="manifest.json">
+  <title>Capture</title>
+  <style>
+    :root {
+      --bg-primary: #0d1117;
+      --bg-secondary: #161b22;
+      --bg-tertiary: #21262d;
+      --border: #30363d;
+      --border-hover: #484f58;
+      --text-primary: #e6edf3;
+      --text-secondary: #8b949e;
+      --text-muted: #484f58;
+      --accent: #58a6ff;
+      --accent-subtle: rgba(88, 166, 255, 0.15);
+      --success: #3fb950;
+      --success-subtle: rgba(63, 185, 80, 0.15);
+      --danger: #f85149;
+      --danger-subtle: rgba(248, 81, 73, 0.15);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      --transition: 0.15s ease;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ===== LAYOUT ===== */
+    .app {
+      display: none;
+      height: 100%;
+    }
+
+    .app.active {
+      display: grid;
+      grid-template-columns: minmax(400px, 1fr) minmax(400px, 1.2fr);
+      gap: 0;
+    }
+
+    /* ===== CAPTURE PANEL ===== */
+    .capture-panel {
+      display: flex;
+      flex-direction: column;
+      padding: 32px;
+      border-right: 1px solid var(--border);
+      background: var(--bg-secondary);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--accent) 0%, #a371f7 100%);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-icon svg {
+      width: 22px;
+      height: 22px;
+      fill: white;
+    }
+
+    .logo-text {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+
+    .capture-form {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .textarea-wrapper {
+      position: relative;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 200px;
+      max-height: 400px;
+    }
+
+    textarea {
+      flex: 1;
+      width: 100%;
+      padding: 20px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-size: 16px;
+      font-family: inherit;
+      line-height: 1.6;
+      resize: none;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px var(--accent-subtle);
+    }
+
+    textarea::placeholder {
+      color: var(--text-muted);
+    }
+
+    .char-count {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .action-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 24px;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .btn svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+
+    .btn-primary {
+      flex: 1;
+      background: linear-gradient(135deg, #238636 0%, #2ea043 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(35, 134, 54, 0.4);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary:disabled {
+      background: var(--bg-tertiary);
+      color: var(--text-muted);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-icon {
+      width: 52px;
+      padding: 14px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+    }
+
+    .btn-icon:hover {
+      background: var(--border);
+      border-color: var(--border-hover);
+      color: var(--text-primary);
+    }
+
+    .btn-icon.recording {
+      background: var(--danger);
+      border-color: var(--danger);
+      color: white;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.8; transform: scale(0.97); }
+    }
+
+    .status-toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      padding: 12px 24px;
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      font-weight: 500;
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 1000;
+    }
+
+    .status-toast.visible {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .status-toast.success {
+      background: var(--success);
+      color: white;
+    }
+
+    .status-toast.error {
+      background: var(--danger);
+      color: white;
+    }
+
+    .shortcut-hint {
+      margin-top: 16px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .shortcut-hint kbd {
+      display: inline-block;
+      padding: 2px 6px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.75rem;
+    }
+
+    .footer-actions {
+      margin-top: auto;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .btn-ghost {
+      padding: 8px 12px;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    .btn-ghost:hover {
+      color: var(--danger);
+      background: var(--danger-subtle);
+    }
+
+    .connection-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .connection-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+    }
+
+    /* ===== HISTORY PANEL ===== */
+    .history-panel {
+      display: flex;
+      flex-direction: column;
+      padding: 32px;
+      background: var(--bg-primary);
+      overflow: hidden;
+    }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-shrink: 0;
+    }
+
+    .history-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .capture-count {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: var(--accent-subtle);
+      border: 1px solid rgba(88, 166, 255, 0.3);
+      border-radius: 24px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--accent);
+    }
+
+    .capture-count::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: var(--success);
+      border-radius: 50%;
+      animation: blink 2s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .history-list {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding-right: 8px;
+    }
+
+    .history-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .history-list::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .history-list::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 3px;
+    }
+
+    .history-list::-webkit-scrollbar-thumb:hover {
+      background: var(--border-hover);
+    }
+
+    .history-item {
+      padding: 16px 20px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      transition: all var(--transition);
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .history-item:hover {
+      border-color: var(--border-hover);
+      background: var(--bg-tertiary);
+    }
+
+    .history-item-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .history-time {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: var(--accent-subtle);
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .history-time svg {
+      width: 12px;
+      height: 12px;
+      fill: currentColor;
+    }
+
+    .history-content {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: var(--text-primary);
+      word-break: break-word;
+    }
+
+    .history-empty {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    .history-empty svg {
+      width: 64px;
+      height: 64px;
+      fill: var(--border);
+      margin-bottom: 16px;
+    }
+
+    .history-empty p {
+      font-size: 1rem;
+      margin-bottom: 4px;
+    }
+
+    .history-empty span {
+      font-size: 0.85rem;
+    }
+
+    .loading-spinner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ===== SETUP SCREEN ===== */
+    .setup-screen {
+      display: none;
+      min-height: 100vh;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: var(--bg-primary);
+    }
+
+    .setup-screen.active {
+      display: flex;
+    }
+
+    .setup-card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      box-shadow: var(--shadow);
+    }
+
+    .setup-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .setup-logo {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, var(--accent) 0%, #a371f7 100%);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+    }
+
+    .setup-logo svg {
+      width: 36px;
+      height: 36px;
+      fill: white;
+    }
+
+    .setup-header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .setup-header p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-size: 15px;
+      font-family: inherit;
+      transition: all var(--transition);
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px var(--accent-subtle);
+    }
+
+    .form-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .form-hint {
+      margin-top: 8px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .form-hint a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .form-hint a:hover {
+      text-decoration: underline;
+    }
+
+    .setup-btn {
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    .setup-status {
+      margin-top: 16px;
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      text-align: center;
+      display: none;
+    }
+
+    .setup-status.error {
+      display: block;
+      background: var(--danger-subtle);
+      color: var(--danger);
+      border: 1px solid rgba(248, 81, 73, 0.3);
+    }
+
+    /* ===== MOBILE ===== */
+    @media (max-width: 900px) {
+      html, body {
+        height: 100%;
+        height: 100dvh;
+        overflow: hidden;
+        position: fixed;
+        width: 100%;
+        top: 0;
+        left: 0;
+      }
+
+      .app.active {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+        height: 100%;
+        height: 100dvh;
+        overflow: hidden;
+      }
+
+      .capture-panel {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 16px;
+        flex-shrink: 0;
+      }
+
+      .logo {
+        margin-bottom: 12px;
+      }
+
+      .textarea-wrapper {
+        min-height: 100px;
+        max-height: 140px;
+      }
+
+      .shortcut-hint {
+        display: none;
+      }
+
+      .footer-actions {
+        display: none;
+      }
+
+      .history-panel {
+        padding: 16px;
+        overflow: hidden;
+        min-height: 0;
+      }
+
+      .history-list {
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .history-header {
+        margin-bottom: 12px;
+      }
+
+      /* Keyboard open state */
+      .keyboard-open .app.active {
+        grid-template-rows: 1fr;
+      }
+
+      .keyboard-open .capture-panel {
+        border-bottom: none;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .keyboard-open .history-panel {
+        display: none;
+      }
+
+      .keyboard-open .logo {
+        display: none;
+      }
+
+      .keyboard-open .capture-form {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .keyboard-open .textarea-wrapper {
+        flex: 1;
+        max-height: none;
+        min-height: 0;
+      }
+
+      .keyboard-open textarea {
+        flex: 1;
+      }
+
+      .keyboard-open .action-row {
+        margin-top: 8px;
+        flex-shrink: 0;
+      }
+    }
+
+    @media (max-width: 500px) {
+      .capture-panel, .history-panel {
+        padding: 12px;
+      }
+
+      .logo-text {
+        font-size: 1.1rem;
+      }
+
+      .logo-icon {
+        width: 32px;
+        height: 32px;
+      }
+
+      .logo-icon svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      .panel-title {
+        font-size: 1rem;
+      }
+
+      .capture-count {
+        padding: 6px 10px;
+        font-size: 0.75rem;
+      }
+
+      textarea {
+        padding: 12px;
+        font-size: 15px;
+      }
+
+      .btn {
+        padding: 12px 16px;
+        font-size: 14px;
+      }
+
+      .btn-icon {
+        width: 46px;
+      }
+
+      .action-row {
+        margin-top: 10px;
+        gap: 8px;
+      }
+
+      .setup-card {
+        padding: 20px;
+      }
+
+      .setup-header h1 {
+        font-size: 1.25rem;
+      }
+
+      .setup-logo {
+        width: 48px;
+        height: 48px;
+      }
+
+      .setup-logo svg {
+        width: 28px;
+        height: 28px;
+      }
+    }
+
+    /* ===== OFFLINE INDICATOR ===== */
+    .offline-banner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 8px 16px;
+      background: var(--danger);
+      color: white;
+      text-align: center;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transform: translateY(-100%);
+      transition: transform 0.3s ease;
+      z-index: 1001;
+    }
+
+    .offline-banner.visible {
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <!-- Offline Banner -->
+  <div class="offline-banner" id="offlineBanner">You're offline. Captures will sync when connected.</div>
+
+  <!-- Status Toast -->
+  <div class="status-toast" id="toast"></div>
+
+  <!-- Setup Screen -->
+  <div class="setup-screen active" id="setup">
+    <div class="setup-card">
+      <div class="setup-header">
+        <div class="setup-logo">
+          <svg viewBox="0 0 24 24"><path d="M19.5 3.5L18 2l-1.5 1.5L15 2l-1.5 1.5L12 2l-1.5 1.5L9 2 7.5 3.5 6 2 4.5 3.5 3 2v20l1.5-1.5L6 22l1.5-1.5L9 22l1.5-1.5L12 22l1.5-1.5L15 22l1.5-1.5L18 22l1.5-1.5L21 22V2l-1.5 1.5zM19 19.09H5V4.91h14v14.18zM6 15h12v2H6zm0-4h12v2H6zm0-4h12v2H6z"/></svg>
+        </div>
+        <h1>Quick Setup</h1>
+        <p>One token, we handle the rest</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="token">GitHub Token</label>
+        <input type="password" id="token" class="form-input" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
+        <p class="form-hint">
+          <a href="https://github.com/settings/tokens/new?scopes=gist&description=Life%20Capture" target="_blank">Create token</a> with gist scope — we'll create your storage automatically
+        </p>
+      </div>
+
+      <button class="btn btn-primary setup-btn" id="saveSetup">
+        <svg viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
+        Get Started
+      </button>
+
+      <div class="setup-status" id="setupStatus"></div>
+    </div>
+  </div>
+
+  <!-- Main App -->
+  <div class="app" id="app">
+    <!-- Capture Panel -->
+    <div class="capture-panel">
+      <div class="logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24"><path d="M19.5 3.5L18 2l-1.5 1.5L15 2l-1.5 1.5L12 2l-1.5 1.5L9 2 7.5 3.5 6 2 4.5 3.5 3 2v20l1.5-1.5L6 22l1.5-1.5L9 22l1.5-1.5L12 22l1.5-1.5L15 22l1.5-1.5L18 22l1.5-1.5L21 22V2l-1.5 1.5zM19 19.09H5V4.91h14v14.18z"/></svg>
+        </div>
+        <span class="logo-text">Capture</span>
+      </div>
+
+      <div class="capture-form">
+        <div class="textarea-wrapper">
+          <textarea id="note" placeholder="What's on your mind?" autofocus></textarea>
+          <span class="char-count" id="charCount">0</span>
+        </div>
+
+        <div class="action-row">
+          <button class="btn btn-icon" id="mic" title="Voice input (hold to record)">
+            <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1 1.93c-3.94-.49-7-3.85-7-7.93h2c0 3.31 2.69 6 6 6s6-2.69 6-6h2c0 4.08-3.06 7.44-7 7.93V20h4v2H8v-2h4v-4.07z"/></svg>
+          </button>
+          <button class="btn btn-primary" id="send">
+            <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+            Send
+          </button>
+        </div>
+
+        <p class="shortcut-hint">Press <kbd>Cmd</kbd> + <kbd>Enter</kbd> to send</p>
+      </div>
+
+      <div class="footer-actions">
+        <button class="btn btn-ghost" id="resetSetup">Disconnect</button>
+        <div class="connection-status">
+          <span class="connection-dot"></span>
+          Connected
+        </div>
+      </div>
+    </div>
+
+    <!-- History Panel -->
+    <div class="history-panel">
+      <div class="history-header">
+        <h2 class="history-title">Today</h2>
+        <span class="capture-count" id="todayCount">0 captures</span>
+      </div>
+
+      <div class="history-list" id="history">
+        <div class="loading-spinner">
+          <div class="spinner"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'life_capture_config';
+    const GIST_FILENAME = 'capture.md';
+
+    // Elements
+    const setupScreen = document.getElementById('setup');
+    const appScreen = document.getElementById('app');
+    const tokenInput = document.getElementById('token');
+    const saveSetupBtn = document.getElementById('saveSetup');
+    const setupStatus = document.getElementById('setupStatus');
+    const noteInput = document.getElementById('note');
+    const sendBtn = document.getElementById('send');
+    const micBtn = document.getElementById('mic');
+    const historyDiv = document.getElementById('history');
+    const resetBtn = document.getElementById('resetSetup');
+    const todayCountEl = document.getElementById('todayCount');
+    const charCountEl = document.getElementById('charCount');
+    const toast = document.getElementById('toast');
+    const offlineBanner = document.getElementById('offlineBanner');
+
+    // State
+    let config = null;
+    let recognition = null;
+    let isRecording = false;
+
+    // ===== UTILITIES =====
+    function showToast(message, type = 'success') {
+      toast.textContent = message;
+      toast.className = `status-toast ${type} visible`;
+      setTimeout(() => toast.classList.remove('visible'), 2500);
+    }
+
+    function showSetupError(message) {
+      setupStatus.textContent = message;
+      setupStatus.className = 'setup-status error';
+    }
+
+    function hideSetupError() {
+      setupStatus.className = 'setup-status';
+    }
+
+    function getTimestamp() {
+      return new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function getDateKey() {
+      return new Date().toISOString().split('T')[0];
+    }
+
+    // ===== SPEECH RECOGNITION =====
+    function setupSpeechRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+      // Speech API requires secure context (HTTPS or localhost)
+      const isSecure = window.isSecureContext || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+
+      if (!SpeechRecognition || !isSecure) {
+        micBtn.style.display = 'none';
+        return;
+      }
+
+      recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-US';
+
+      let finalTranscript = '';
+
+      recognition.onstart = () => {
+        isRecording = true;
+        micBtn.classList.add('recording');
+        finalTranscript = noteInput.value;
+      };
+
+      recognition.onend = () => {
+        isRecording = false;
+        micBtn.classList.remove('recording');
+      };
+
+      recognition.onresult = (event) => {
+        let interim = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            finalTranscript += transcript + ' ';
+          } else {
+            interim += transcript;
+          }
+        }
+        noteInput.value = finalTranscript + interim;
+        updateCharCount();
+      };
+
+      recognition.onerror = () => {
+        isRecording = false;
+        micBtn.classList.remove('recording');
+      };
+    }
+
+    // ===== API =====
+    async function verifyToken(token) {
+      const res = await fetch('https://api.github.com/user', {
+        headers: { 'Authorization': `token ${token}` }
+      });
+      return res.ok;
+    }
+
+    async function createGist(token) {
+      const res = await fetch('https://api.github.com/gists', {
+        method: 'POST',
+        headers: {
+          'Authorization': `token ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          description: 'Life Capture Log',
+          public: false,
+          files: {
+            [GIST_FILENAME]: {
+              content: `# Capture Log\n\nNotes captured from mobile.\n`
+            }
+          }
+        })
+      });
+      if (!res.ok) throw new Error('Failed to create gist');
+      const data = await res.json();
+      return data.id;
+    }
+
+    async function findExistingGist(token) {
+      // Check if user already has a capture gist
+      const res = await fetch('https://api.github.com/gists', {
+        headers: { 'Authorization': `token ${token}` }
+      });
+      if (!res.ok) return null;
+      const gists = await res.json();
+      const existing = gists.find(g => g.files && g.files[GIST_FILENAME]);
+      return existing ? existing.id : null;
+    }
+
+    async function getGistContent() {
+      const res = await fetch(`https://api.github.com/gists/${config.gistId}`, {
+        headers: { 'Authorization': `token ${config.token}` }
+      });
+      if (!res.ok) throw new Error('Failed to fetch');
+      const data = await res.json();
+      return data.files[GIST_FILENAME]?.content || '';
+    }
+
+    async function updateGist(content) {
+      const res = await fetch(`https://api.github.com/gists/${config.gistId}`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `token ${config.token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ files: { [GIST_FILENAME]: { content } } })
+      });
+      if (!res.ok) throw new Error('Failed to update');
+      return res.json();
+    }
+
+    // ===== HISTORY =====
+    async function loadToday() {
+      historyDiv.innerHTML = '<div class="loading-spinner"><div class="spinner"></div></div>';
+
+      try {
+        const content = await getGistContent();
+        const dateKey = getDateKey();
+        const lines = content.split('\n');
+        const todayLines = [];
+        let inToday = false;
+
+        for (const line of lines) {
+          if (line.startsWith('## ' + dateKey)) {
+            inToday = true;
+            continue;
+          }
+          if (line.startsWith('## 20') && inToday) break;
+          if (inToday && line.trim()) {
+            todayLines.push(line);
+          }
+        }
+
+        const count = todayLines.length;
+        todayCountEl.textContent = count + (count === 1 ? ' capture' : ' captures');
+
+        if (todayLines.length === 0) {
+          historyDiv.innerHTML = `
+            <div class="history-empty">
+              <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+              <p>No captures yet</p>
+              <span>Your thoughts will appear here</span>
+            </div>
+          `;
+        } else {
+          historyDiv.innerHTML = todayLines.map(l => {
+            const match = l.match(/^\*\*(\d{2}:\d{2})\*\* — (.+)$/);
+            if (match) {
+              return `
+                <div class="history-item">
+                  <div class="history-item-header">
+                    <span class="history-time">
+                      <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                      ${match[1]}
+                    </span>
+                  </div>
+                  <div class="history-content">${escapeHtml(match[2])}</div>
+                </div>
+              `;
+            }
+            return `<div class="history-item"><div class="history-content">${escapeHtml(l)}</div></div>`;
+          }).join('');
+        }
+      } catch (e) {
+        console.error(e);
+        historyDiv.innerHTML = `
+          <div class="history-empty">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+            <p>Failed to load</p>
+            <span>Check your connection</span>
+          </div>
+        `;
+      }
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    // ===== UI =====
+    function showSetup() {
+      setupScreen.classList.add('active');
+      appScreen.classList.remove('active');
+    }
+
+    function showApp() {
+      setupScreen.classList.remove('active');
+      appScreen.classList.add('active');
+      noteInput.focus();
+    }
+
+    function updateCharCount() {
+      charCountEl.textContent = noteInput.value.length;
+    }
+
+    // ===== EVENTS =====
+    saveSetupBtn.addEventListener('click', async () => {
+      const token = tokenInput.value.trim();
+
+      if (!token) {
+        showSetupError('Please enter your GitHub token');
+        return;
+      }
+
+      hideSetupError();
+      saveSetupBtn.disabled = true;
+      saveSetupBtn.innerHTML = '<div class="spinner" style="width:18px;height:18px;border-width:2px;"></div> Verifying...';
+
+      try {
+        // Verify token works
+        const valid = await verifyToken(token);
+        if (!valid) throw new Error('Invalid token');
+
+        saveSetupBtn.innerHTML = '<div class="spinner" style="width:18px;height:18px;border-width:2px;"></div> Setting up...';
+
+        // Check for existing capture gist
+        let gistId = await findExistingGist(token);
+
+        if (!gistId) {
+          // Create new gist
+          saveSetupBtn.innerHTML = '<div class="spinner" style="width:18px;height:18px;border-width:2px;"></div> Creating storage...';
+          gistId = await createGist(token);
+        }
+
+        config = { token, gistId };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+        showApp();
+        loadToday();
+        showToast('Ready to capture!');
+      } catch (e) {
+        console.error(e);
+        showSetupError('Invalid token or missing gist permission. Make sure you selected the "gist" scope.');
+      } finally {
+        saveSetupBtn.disabled = false;
+        saveSetupBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg> Get Started';
+      }
+    });
+
+    sendBtn.addEventListener('click', async () => {
+      const note = noteInput.value.trim();
+      if (!note) return;
+
+      if (isRecording && recognition) recognition.stop();
+
+      sendBtn.disabled = true;
+      sendBtn.innerHTML = '<div class="spinner" style="width:18px;height:18px;border-width:2px;"></div> Sending...';
+
+      try {
+        const content = await getGistContent();
+        const dateKey = getDateKey();
+        const timestamp = getTimestamp();
+        const entry = `**${timestamp}** — ${note}`;
+
+        let newContent;
+        if (content.includes(`## ${dateKey}`)) {
+          newContent = content.replace(`## ${dateKey}`, `## ${dateKey}\n${entry}`);
+        } else {
+          newContent = `## ${dateKey}\n${entry}\n\n${content}`;
+        }
+
+        await updateGist(newContent);
+        noteInput.value = '';
+        updateCharCount();
+        showToast('Captured!');
+        loadToday();
+        noteInput.focus();
+      } catch (e) {
+        showToast('Failed to send', 'error');
+        console.error(e);
+      } finally {
+        sendBtn.disabled = false;
+        sendBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg> Send';
+      }
+    });
+
+    micBtn.addEventListener('click', () => {
+      if (!recognition) return;
+      if (isRecording) {
+        recognition.stop();
+      } else {
+        recognition.start();
+      }
+    });
+
+    resetBtn.addEventListener('click', () => {
+      if (confirm('Disconnect from this gist?')) {
+        localStorage.removeItem(STORAGE_KEY);
+        config = null;
+        showSetup();
+      }
+    });
+
+    noteInput.addEventListener('input', updateCharCount);
+
+    noteInput.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        e.preventDefault();
+        sendBtn.click();
+      }
+    });
+
+    // Enter key on setup
+    tokenInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        saveSetupBtn.click();
+      }
+    });
+
+    // Offline detection
+    window.addEventListener('online', () => {
+      offlineBanner.classList.remove('visible');
+      if (config) loadToday();
+    });
+
+    window.addEventListener('offline', () => {
+      offlineBanner.classList.add('visible');
+    });
+
+    // ===== KEYBOARD DETECTION =====
+    function setupKeyboardDetection() {
+      // Use visualViewport API to detect keyboard
+      if (window.visualViewport) {
+        let initialHeight = window.visualViewport.height;
+
+        const handleResize = () => {
+          const currentHeight = window.visualViewport.height;
+          const heightDiff = initialHeight - currentHeight;
+
+          // Keyboard is likely open if viewport shrinks by more than 150px
+          if (heightDiff > 150) {
+            document.body.classList.add('keyboard-open');
+            // Set the app height to match visual viewport
+            document.documentElement.style.setProperty('--vh', `${currentHeight}px`);
+            appScreen.style.height = `${currentHeight}px`;
+          } else {
+            document.body.classList.remove('keyboard-open');
+            document.documentElement.style.removeProperty('--vh');
+            appScreen.style.height = '';
+            initialHeight = currentHeight; // Update baseline when keyboard closes
+          }
+        };
+
+        window.visualViewport.addEventListener('resize', handleResize);
+        window.visualViewport.addEventListener('scroll', () => {
+          // Prevent visual viewport scroll - keep everything in place
+          window.visualViewport.pageTop = 0;
+        });
+      }
+
+      // Fallback: detect focus on inputs
+      noteInput.addEventListener('focus', () => {
+        // Small delay to let keyboard animate open
+        setTimeout(() => {
+          if (window.innerWidth <= 900) {
+            document.body.classList.add('keyboard-open');
+          }
+        }, 300);
+      });
+
+      noteInput.addEventListener('blur', () => {
+        // Small delay before removing to prevent flicker
+        setTimeout(() => {
+          document.body.classList.remove('keyboard-open');
+        }, 100);
+      });
+    }
+
+    // ===== INIT =====
+    function init() {
+      setupSpeechRecognition();
+      setupKeyboardDetection();
+
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        config = JSON.parse(stored);
+        showApp();
+        loadToday();
+      } else {
+        showSetup();
+      }
+
+      if (!navigator.onLine) {
+        offlineBanner.classList.add('visible');
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
