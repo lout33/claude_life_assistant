@@ -33,7 +33,7 @@
 
 ## Memory (AI Notes)
 
-This is where Claude tracks patterns, insights, and breakthroughs over time.
+> Current week only. Older entries archived to `LOG_ARCHIVE.md` (full markdown, no compression).
 
 ### [Date]
 - [Key insight or pattern observed]
