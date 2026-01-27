@@ -211,6 +211,16 @@ Interested in the full system? **Let me know** (feedback helps prioritize what t
 - Claude Code CLI or OpenCode (or any Claude interface that supports custom instructions)
 - A folder for your life system
 
+## Related Projects
+
+Part of the symbiotic AI ecosystem:
+
+| Project | What it does |
+|---------|--------------|
+| [writing-style-skill](https://github.com/lout33/writing-style-skill) | Make AI write like you. Export your emails/chats, extract your patterns, transform any AI text into your voice. |
+
+More skills coming. Star to follow.
+
 ## Credits
 
 Created by [@lout33](https://github.com/lout33)
