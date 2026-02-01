@@ -20,15 +20,15 @@ echo ""
 mkdir -p "$TMP_DIR"
 
 # Download files (always CLAUDE.md from repo)
-curl -fsSL "$REPO_URL/CLAUDE.md" -o "$TMP_DIR/CLAUDE.md"
-curl -fsSL "$REPO_URL/NOW.md" -o "$TMP_DIR/NOW.md"
+curl -fsSL "$REPO_URL/CLAUDE.md" -o "$TMP_DIR/CLAUDE.md" || { echo "Failed to download CLAUDE.md"; exit 1; }
+curl -fsSL "$REPO_URL/NOW.md" -o "$TMP_DIR/NOW.md" || { echo "Failed to download NOW.md"; exit 1; }
 
 # Download commands
 mkdir -p "$TMP_DIR/commands"
-curl -fsSL "$REPO_URL/commands/start-day.md" -o "$TMP_DIR/commands/start-day.md"
-curl -fsSL "$REPO_URL/commands/check-day.md" -o "$TMP_DIR/commands/check-day.md"
-curl -fsSL "$REPO_URL/commands/end-day.md" -o "$TMP_DIR/commands/end-day.md"
-curl -fsSL "$REPO_URL/commands/reflect.md" -o "$TMP_DIR/commands/reflect.md"
+curl -fsSL "$REPO_URL/commands/start-day.md" -o "$TMP_DIR/commands/start-day.md" || { echo "Failed to download start-day.md"; exit 1; }
+curl -fsSL "$REPO_URL/commands/check-day.md" -o "$TMP_DIR/commands/check-day.md" || { echo "Failed to download check-day.md"; exit 1; }
+curl -fsSL "$REPO_URL/commands/end-day.md" -o "$TMP_DIR/commands/end-day.md" || { echo "Failed to download end-day.md"; exit 1; }
+curl -fsSL "$REPO_URL/commands/reflect.md" -o "$TMP_DIR/commands/reflect.md" || { echo "Failed to download reflect.md"; exit 1; }
 
 # Detect installed tools
 CLAUDE_CODE=false
@@ -52,57 +52,42 @@ if [ "$CLAUDE_CODE" = true ] && [ "$OPENCODE" = true ]; then
     echo "Detected both Claude Code and OpenCode."
     echo ""
     echo "Where do you want to install?"
-    echo "  1) Claude Code (~/.claude/)"
-    echo "  2) OpenCode (~/.config/opencode/)"
-    echo "  3) Current directory (local project)"
+    echo "  1) Claude Code - Global (~/.claude/)"
+    echo "  2) Claude Code - Local (./CLAUDE.md)"
+    echo "  3) OpenCode - Global (~/.config/opencode/)"
+    echo "  4) OpenCode - Local (./AGENTS.md)"
     echo ""
     
     if [ -e /dev/tty ]; then
-        read -p "Choose [1/2/3]: " choice < /dev/tty
+        read -p "Choose [1/2/3/4]: " choice < /dev/tty
     else
-        echo "Non-interactive mode. Defaulting to current directory."
-        choice=3
+        echo "Non-interactive mode. Exiting."
+        rm -rf "$TMP_DIR"
+        exit 1
     fi
     
     case $choice in
         1)
             TARGET="$HOME/.claude"
-            TARGET_NAME="Claude Code"
+            TARGET_NAME="Claude Code (Global)"
             CONFIG_FILE="CLAUDE.md"
             ;;
         2)
+            TARGET="."
+            TARGET_NAME="Claude Code (Local)"
+            CONFIG_FILE="CLAUDE.md"
+            ;;
+        3)
             TARGET="$HOME/.config/opencode"
-            TARGET_NAME="OpenCode"
+            TARGET_NAME="OpenCode (Global)"
             CONFIG_FILE="AGENTS.md"
             IS_OPENCODE=true
             ;;
-        3)
+        4)
             TARGET="."
-            TARGET_NAME="current directory"
-            echo ""
-            echo "Which tool will you use with this project?"
-            echo "  1) Claude Code (creates CLAUDE.md)"
-            echo "  2) OpenCode (creates AGENTS.md)"
-            echo ""
-            if [ -e /dev/tty ]; then
-                read -p "Choose [1/2]: " tool_choice < /dev/tty
-            else
-                echo "Non-interactive mode. Defaulting to CLAUDE.md."
-                tool_choice=1
-            fi
-            case $tool_choice in
-                1)
-                    CONFIG_FILE="CLAUDE.md"
-                    ;;
-                2)
-                    CONFIG_FILE="AGENTS.md"
-                    IS_OPENCODE=true
-                    ;;
-                *)
-                    echo "Invalid choice. Defaulting to CLAUDE.md."
-                    CONFIG_FILE="CLAUDE.md"
-                    ;;
-            esac
+            TARGET_NAME="OpenCode (Local)"
+            CONFIG_FILE="AGENTS.md"
+            IS_OPENCODE=true
             ;;
         *)
             echo "Invalid choice. Exiting."
@@ -111,45 +96,83 @@ if [ "$CLAUDE_CODE" = true ] && [ "$OPENCODE" = true ]; then
             ;;
     esac
 elif [ "$CLAUDE_CODE" = true ]; then
-    echo "Detected: Claude Code (~/.claude/)"
-    TARGET="$HOME/.claude"
-    TARGET_NAME="Claude Code"
-    CONFIG_FILE="CLAUDE.md"
-elif [ "$OPENCODE" = true ]; then
-    echo "Detected: OpenCode (~/.config/opencode/)"
-    TARGET="$HOME/.config/opencode"
-    TARGET_NAME="OpenCode"
-    CONFIG_FILE="AGENTS.md"
-    IS_OPENCODE=true
-else
-    echo "No Claude Code or OpenCode detected."
-    echo "Installing to current directory..."
+    echo "Detected: Claude Code"
     echo ""
-    echo "Which tool will you use with this project?"
-    echo "  1) Claude Code (creates CLAUDE.md)"
-    echo "  2) OpenCode (creates AGENTS.md)"
+    echo "Where do you want to install?"
+    echo "  1) Global (~/.claude/)"
+    echo "  2) Local (./CLAUDE.md)"
     echo ""
+    
     if [ -e /dev/tty ]; then
-        read -p "Choose [1/2]: " tool_choice < /dev/tty
+        read -p "Choose [1/2]: " choice < /dev/tty
     else
-        echo "Non-interactive mode. Defaulting to CLAUDE.md."
-        tool_choice=1
+        echo "Non-interactive mode. Exiting."
+        rm -rf "$TMP_DIR"
+        exit 1
     fi
-    case $tool_choice in
+    
+    case $choice in
         1)
+            TARGET="$HOME/.claude"
+            TARGET_NAME="Claude Code (Global)"
             CONFIG_FILE="CLAUDE.md"
             ;;
         2)
+            TARGET="."
+            TARGET_NAME="Claude Code (Local)"
+            CONFIG_FILE="CLAUDE.md"
+            ;;
+        *)
+            echo "Invalid choice. Exiting."
+            rm -rf "$TMP_DIR"
+            exit 1
+            ;;
+    esac
+elif [ "$OPENCODE" = true ]; then
+    echo "Detected: OpenCode"
+    echo ""
+    echo "Where do you want to install?"
+    echo "  1) Global (~/.config/opencode/)"
+    echo "  2) Local (./AGENTS.md)"
+    echo ""
+    
+    if [ -e /dev/tty ]; then
+        read -p "Choose [1/2]: " choice < /dev/tty
+    else
+        echo "Non-interactive mode. Exiting."
+        rm -rf "$TMP_DIR"
+        exit 1
+    fi
+    
+    case $choice in
+        1)
+            TARGET="$HOME/.config/opencode"
+            TARGET_NAME="OpenCode (Global)"
+            CONFIG_FILE="AGENTS.md"
+            IS_OPENCODE=true
+            ;;
+        2)
+            TARGET="."
+            TARGET_NAME="OpenCode (Local)"
             CONFIG_FILE="AGENTS.md"
             IS_OPENCODE=true
             ;;
         *)
-            echo "Invalid choice. Defaulting to CLAUDE.md."
-            CONFIG_FILE="CLAUDE.md"
+            echo "Invalid choice. Exiting."
+            rm -rf "$TMP_DIR"
+            exit 1
             ;;
     esac
-    TARGET="."
-    TARGET_NAME="current directory"
+else
+    echo "No Claude Code or OpenCode installation detected."
+    echo ""
+    echo "Please install one of the following first:"
+    echo "  - Claude Code: https://docs.anthropic.com/en/docs/claude-code"
+    echo "  - OpenCode: https://opencode.ai/docs"
+    echo ""
+    echo "Then run this installer again."
+    rm -rf "$TMP_DIR"
+    exit 1
 fi
 
 echo ""
@@ -185,10 +208,15 @@ cp "$TMP_DIR/NOW.md" "$TARGET_NOW"
 echo -e "${GREEN}✓ Copied NOW.md${NC}"
 
 # Copy commands to appropriate location
-# Claude Code uses "commands" (plural), OpenCode uses "command" (singular)
-if [ "$IS_OPENCODE" = true ]; then
-    COMMANDS_DIR="$TARGET/command"
+if [ "$TARGET" = "." ]; then
+    # Local project - use .claude or .opencode subdirectory
+    if [ "$IS_OPENCODE" = true ]; then
+        COMMANDS_DIR=".opencode/commands"
+    else
+        COMMANDS_DIR=".claude/commands"
+    fi
 else
+    # Global install
     COMMANDS_DIR="$TARGET/commands"
 fi
 
@@ -201,8 +229,6 @@ rm -rf "$TMP_DIR"
 
 echo ""
 echo -e "${GREEN}Done!${NC}"
-echo ""
-
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
