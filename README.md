@@ -130,6 +130,22 @@ Separation of concerns:
 
 Stable files rarely change. NOW.md changes every session. The agent reads all four, updates NOW.md as you work.
 
+### Optional Files
+
+Extend the system with these optional files as needed:
+
+| File | Purpose | When to add |
+|------|---------|-------------|
+| `IDEAS.md` | Capture ideas on the fly | When you want a dedicated space for random thoughts, app ideas, shower thoughts |
+| `PROJECTS.md` | Detailed project tracking | When NOW.md's queue isn't enough for complex multi-project work |
+| `PEOPLE.md` | Network and relationships | When you need to track contacts, collaborators, mentors |
+| `JOURNAL.md` | Daily/weekly reflections | When you want longer-form writing separate from the LOG |
+| `GOALS.md` | Long-term goals and milestones | When USER.md mission needs more detail |
+| `HABITS.md` | Habit tracking | When you're building/breaking specific habits |
+| `LOG_ARCHIVE.md` | Archived memory logs | Created automatically when you say "archive logs" |
+
+Just create the file. The agent will discover and use it. Tell it in AGENTS.md if you want specific behavior.
+
 **Conversation > Documentation**
 
 You talk. The agent acts and maintains the files. No manual editing required (though you can if you want).
