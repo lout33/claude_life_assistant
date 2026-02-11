@@ -1,6 +1,6 @@
-# NOW.md — Current State
+# NOW.md - Current State
 
-> Dynamic file. Update often. See `CLAUDE.md` for stable info.
+> Dynamic file. Update often. See `AGENTS.md`, `SOUL.md`, `USER.md` for stable info.
 
 **Last Updated:** [Date]
 
@@ -17,7 +17,7 @@
 # THIS WEEK
 
 ## Active Missions
-1. **[MISSION]** — [One-line description]
+1. **[MISSION]** - [One-line description]
 
 ## Actions
 

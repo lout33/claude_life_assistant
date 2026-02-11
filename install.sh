@@ -1,26 +1,28 @@
 #!/bin/bash
 
-# Claude Life Assistant - One-liner installer
-# Usage: curl -fsSL https://raw.githubusercontent.com/lout33/claude_life_assistant/main/install.sh | bash
+# AI Life Assistant - One-liner installer
+# Usage: curl -fsSL https://raw.githubusercontent.com/lout33/ai-life-assistant/main/install.sh | bash
 
 set -e
 
-REPO_URL="https://raw.githubusercontent.com/lout33/claude_life_assistant/main"
-TMP_DIR="/tmp/claude_life_assistant_install"
+REPO_URL="https://raw.githubusercontent.com/lout33/ai-life-assistant/main"
+TMP_DIR="/tmp/ai_life_assistant_install"
 
 # Colors
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-echo "Downloading Claude Life Assistant..."
+echo "Downloading AI Life Assistant..."
 echo ""
 
 # Create temp directory
 mkdir -p "$TMP_DIR"
 
-# Download files (always CLAUDE.md from repo)
-curl -fsSL "$REPO_URL/CLAUDE.md" -o "$TMP_DIR/CLAUDE.md" || { echo "Failed to download CLAUDE.md"; exit 1; }
+# Download the 4 core files
+curl -fsSL "$REPO_URL/AGENTS.md" -o "$TMP_DIR/AGENTS.md" || { echo "Failed to download AGENTS.md"; exit 1; }
+curl -fsSL "$REPO_URL/SOUL.md" -o "$TMP_DIR/SOUL.md" || { echo "Failed to download SOUL.md"; exit 1; }
+curl -fsSL "$REPO_URL/USER.md" -o "$TMP_DIR/USER.md" || { echo "Failed to download USER.md"; exit 1; }
 curl -fsSL "$REPO_URL/NOW.md" -o "$TMP_DIR/NOW.md" || { echo "Failed to download NOW.md"; exit 1; }
 
 # Download commands
@@ -33,6 +35,7 @@ curl -fsSL "$REPO_URL/commands/reflect.md" -o "$TMP_DIR/commands/reflect.md" || 
 # Detect installed tools
 CLAUDE_CODE=false
 OPENCODE=false
+NANOBOT=false
 
 if [ -d "$HOME/.claude" ]; then
     CLAUDE_CODE=true
@@ -42,20 +45,23 @@ if [ -d "$HOME/.config/opencode" ]; then
     OPENCODE=true
 fi
 
+if [ -d "$HOME/.nanobot" ]; then
+    NANOBOT=true
+fi
+
 # Determine install target
 TARGET=""
 TARGET_NAME=""
-CONFIG_FILE=""
-IS_OPENCODE=false
+IS_CLAUDE_CODE=false
 
 if [ "$CLAUDE_CODE" = true ] && [ "$OPENCODE" = true ]; then
-    echo "Detected both Claude Code and OpenCode."
+    echo "Detected both Claude Code and opencode."
     echo ""
     echo "Where do you want to install?"
     echo "  1) Claude Code - Global (~/.claude/)"
-    echo "  2) Claude Code - Local (./CLAUDE.md)"
-    echo "  3) OpenCode - Global (~/.config/opencode/)"
-    echo "  4) OpenCode - Local (./AGENTS.md)"
+    echo "  2) Claude Code - Local (./)"
+    echo "  3) opencode - Global (~/.config/opencode/)"
+    echo "  4) opencode - Local (./)"
     echo ""
     
     if [ -e /dev/tty ]; then
@@ -70,24 +76,20 @@ if [ "$CLAUDE_CODE" = true ] && [ "$OPENCODE" = true ]; then
         1)
             TARGET="$HOME/.claude"
             TARGET_NAME="Claude Code (Global)"
-            CONFIG_FILE="CLAUDE.md"
+            IS_CLAUDE_CODE=true
             ;;
         2)
             TARGET="."
             TARGET_NAME="Claude Code (Local)"
-            CONFIG_FILE="CLAUDE.md"
+            IS_CLAUDE_CODE=true
             ;;
         3)
             TARGET="$HOME/.config/opencode"
-            TARGET_NAME="OpenCode (Global)"
-            CONFIG_FILE="AGENTS.md"
-            IS_OPENCODE=true
+            TARGET_NAME="opencode (Global)"
             ;;
         4)
             TARGET="."
-            TARGET_NAME="OpenCode (Local)"
-            CONFIG_FILE="AGENTS.md"
-            IS_OPENCODE=true
+            TARGET_NAME="opencode (Local)"
             ;;
         *)
             echo "Invalid choice. Exiting."
@@ -100,7 +102,7 @@ elif [ "$CLAUDE_CODE" = true ]; then
     echo ""
     echo "Where do you want to install?"
     echo "  1) Global (~/.claude/)"
-    echo "  2) Local (./CLAUDE.md)"
+    echo "  2) Local (./)"
     echo ""
     
     if [ -e /dev/tty ]; then
@@ -115,12 +117,12 @@ elif [ "$CLAUDE_CODE" = true ]; then
         1)
             TARGET="$HOME/.claude"
             TARGET_NAME="Claude Code (Global)"
-            CONFIG_FILE="CLAUDE.md"
+            IS_CLAUDE_CODE=true
             ;;
         2)
             TARGET="."
             TARGET_NAME="Claude Code (Local)"
-            CONFIG_FILE="CLAUDE.md"
+            IS_CLAUDE_CODE=true
             ;;
         *)
             echo "Invalid choice. Exiting."
@@ -129,11 +131,11 @@ elif [ "$CLAUDE_CODE" = true ]; then
             ;;
     esac
 elif [ "$OPENCODE" = true ]; then
-    echo "Detected: OpenCode"
+    echo "Detected: opencode"
     echo ""
     echo "Where do you want to install?"
     echo "  1) Global (~/.config/opencode/)"
-    echo "  2) Local (./AGENTS.md)"
+    echo "  2) Local (./)"
     echo ""
     
     if [ -e /dev/tty ]; then
@@ -147,15 +149,11 @@ elif [ "$OPENCODE" = true ]; then
     case $choice in
         1)
             TARGET="$HOME/.config/opencode"
-            TARGET_NAME="OpenCode (Global)"
-            CONFIG_FILE="AGENTS.md"
-            IS_OPENCODE=true
+            TARGET_NAME="opencode (Global)"
             ;;
         2)
             TARGET="."
-            TARGET_NAME="OpenCode (Local)"
-            CONFIG_FILE="AGENTS.md"
-            IS_OPENCODE=true
+            TARGET_NAME="opencode (Local)"
             ;;
         *)
             echo "Invalid choice. Exiting."
@@ -164,65 +162,68 @@ elif [ "$OPENCODE" = true ]; then
             ;;
     esac
 else
-    echo "No Claude Code or OpenCode installation detected."
+    echo "No Claude Code or opencode installation detected."
     echo ""
-    echo "Please install one of the following first:"
-    echo "  - Claude Code: https://docs.anthropic.com/en/docs/claude-code"
-    echo "  - OpenCode: https://opencode.ai/docs"
-    echo ""
-    echo "Then run this installer again."
-    rm -rf "$TMP_DIR"
-    exit 1
+    echo "Installing to current directory..."
+    TARGET="."
+    TARGET_NAME="Local"
 fi
 
 echo ""
 echo "Installing to $TARGET_NAME..."
 echo ""
 
-# Prepare config file (rename for OpenCode if needed)
-if [ "$IS_OPENCODE" = true ]; then
-    # Replace CLAUDE.md references with AGENTS.md in the file
-    sed -i.bak 's/CLAUDE\.md/AGENTS.md/g' "$TMP_DIR/CLAUDE.md"
-    rm -f "$TMP_DIR/CLAUDE.md.bak"
-    mv "$TMP_DIR/CLAUDE.md" "$TMP_DIR/AGENTS.md"
-fi
+# Function to copy file with backup
+copy_with_backup() {
+    local src="$1"
+    local dest="$2"
+    local filename=$(basename "$dest")
+    
+    if [ -f "$dest" ]; then
+        echo -e "${YELLOW}! $filename already exists${NC}"
+        echo "  Backup created at $dest.backup"
+        cp "$dest" "$dest.backup"
+    fi
+    cp "$src" "$dest"
+    echo -e "${GREEN}+ Copied $filename${NC}"
+}
 
-# Copy config file
-TARGET_CONFIG="$TARGET/$CONFIG_FILE"
-if [ -f "$TARGET_CONFIG" ]; then
-    echo -e "${YELLOW}! $CONFIG_FILE already exists at $TARGET_CONFIG${NC}"
-    echo "  Backup created at $TARGET_CONFIG.backup"
-    cp "$TARGET_CONFIG" "$TARGET_CONFIG.backup"
-fi
-cp "$TMP_DIR/$CONFIG_FILE" "$TARGET_CONFIG"
-echo -e "${GREEN}✓ Copied $CONFIG_FILE${NC}"
+# Copy the 4 core files
+copy_with_backup "$TMP_DIR/AGENTS.md" "$TARGET/AGENTS.md"
+copy_with_backup "$TMP_DIR/SOUL.md" "$TARGET/SOUL.md"
+copy_with_backup "$TMP_DIR/USER.md" "$TARGET/USER.md"
+copy_with_backup "$TMP_DIR/NOW.md" "$TARGET/NOW.md"
 
-# Copy NOW.md
-TARGET_NOW="$TARGET/NOW.md"
-if [ -f "$TARGET_NOW" ]; then
-    echo -e "${YELLOW}! NOW.md already exists at $TARGET_NOW${NC}"
-    echo "  Backup created at $TARGET_NOW.backup"
-    cp "$TARGET_NOW" "$TARGET_NOW.backup"
+# For Claude Code, also create combined CLAUDE.md
+if [ "$IS_CLAUDE_CODE" = true ]; then
+    echo ""
+    echo "Creating CLAUDE.md for Claude Code compatibility..."
+    cat "$TMP_DIR/AGENTS.md" "$TMP_DIR/SOUL.md" "$TMP_DIR/USER.md" > "$TARGET/CLAUDE.md"
+    echo -e "${GREEN}+ Created CLAUDE.md (combined file)${NC}"
 fi
-cp "$TMP_DIR/NOW.md" "$TARGET_NOW"
-echo -e "${GREEN}✓ Copied NOW.md${NC}"
 
 # Copy commands to appropriate location
 if [ "$TARGET" = "." ]; then
-    # Local project - use .claude or .opencode subdirectory
-    if [ "$IS_OPENCODE" = true ]; then
-        COMMANDS_DIR=".opencode/commands"
-    else
+    if [ "$IS_CLAUDE_CODE" = true ]; then
         COMMANDS_DIR=".claude/commands"
+    else
+        COMMANDS_DIR=".opencode/commands"
     fi
 else
-    # Global install
     COMMANDS_DIR="$TARGET/commands"
 fi
 
 mkdir -p "$COMMANDS_DIR"
 cp "$TMP_DIR/commands/"*.md "$COMMANDS_DIR/"
-echo -e "${GREEN}✓ Copied commands (start-day, check-day, end-day, reflect)${NC}"
+echo -e "${GREEN}+ Copied commands (start-day, check-day, end-day, reflect)${NC}"
+
+# nanobot hint
+if [ "$NANOBOT" = true ]; then
+    echo ""
+    echo -e "${YELLOW}nanobot detected!${NC}"
+    echo "To use with nanobot, edit ~/.nanobot/config.json:"
+    echo "  \"workspace\": \"$(cd "$TARGET" && pwd)\""
+fi
 
 # Cleanup temp files
 rm -rf "$TMP_DIR"
@@ -230,36 +231,34 @@ rm -rf "$TMP_DIR"
 echo ""
 echo -e "${GREEN}Done!${NC}"
 echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "============================================================"
 echo ""
 echo "Your symbiotic agent is ready."
 echo ""
-echo "Two files power the system:"
-echo "  $CONFIG_FILE  — Your identity, psychology, patterns"
-echo "  NOW.md        — Current state, projects, memory log"
+echo "Four files power the system:"
+echo "  AGENTS.md  - Operations, rules, how the agent works"
+echo "  SOUL.md    - Agent personality and identity"
+echo "  USER.md    - Your profile, psychology, patterns"
+echo "  NOW.md     - Current state, projects, memory log"
 echo ""
 echo "Commands available:"
-echo "  /start-day    — Morning kickoff, set MIT"
-echo "  /check-day    — Quick accountability check-in"
-echo "  /end-day      — Evening review, capture wins"
-echo "  /reflect      — Deep reflection, creates journal entry"
+echo "  /start-day    - Morning kickoff, set MIT"
+echo "  /check-day    - Quick accountability check-in"
+echo "  /end-day      - Evening review, capture wins"
+echo "  /reflect      - Deep reflection, creates journal entry"
 echo ""
-echo "The agent reads both files at session start."
-echo "Just start talking. It already knows you."
+echo "The agent reads all files at session start."
+echo "Just start talking. It adapts to you."
 echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "============================================================"
 echo ""
 
-if [ "$TARGET_NAME" = "Claude Code" ]; then
+if [[ "$TARGET_NAME" == *"Claude Code"* ]]; then
     echo "Run: claude"
-elif [ "$TARGET_NAME" = "OpenCode" ]; then
+elif [[ "$TARGET_NAME" == *"opencode"* ]]; then
     echo "Run: opencode"
 else
-    if [ "$CONFIG_FILE" = "CLAUDE.md" ]; then
-        echo "Open this directory with Claude Code."
-    else
-        echo "Open this directory with OpenCode."
-    fi
+    echo "Open this directory with your AI coding tool."
 fi
 
 echo ""

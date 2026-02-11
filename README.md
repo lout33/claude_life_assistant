@@ -1,17 +1,17 @@
-# Claude Life Assistant
+# AI Life Assistant
 
-A symbiotic AI agent that remembers everything, challenges you, and extends your cognition.
+A symbiotic AI agent that remembers everything, challenges you, and extends your cognition. Works across Claude Code, opencode, nanobot, and any LLM interface.
 
-<a href="https://www.youtube.com/watch?v=oBURNsNVU3Y"><img src="https://i.ibb.co/mCcVCc1m/whiteboard-evolution.jpg" alt="Claude Life Assistant Demo" border="0"></a>
+<a href="https://www.youtube.com/watch?v=oBURNsNVU3Y"><img src="https://i.ibb.co/mCcVCc1m/whiteboard-evolution.jpg" alt="AI Life Assistant Demo" border="0"></a>
 
 [Watch the video](https://www.youtube.com/watch?v=oBURNsNVU3Y)
 
 ## What This Is
 
-Two files that turn Claude into a symbiotic agent:
-- **Memory** — Persistent context across all sessions
-- **Challenge** — Calls out your patterns, not just validates you
-- **Autonomy** — Acts directly (code, files, research)
+Four files that turn any AI into a symbiotic agent:
+- **Memory** - Persistent context across all sessions
+- **Challenge** - Calls out your patterns, not just validates you
+- **Autonomy** - Acts directly (code, files, research)
 
 **The key difference:** Not a chatbot. An agent that lives in your filesystem, remembers your context, sees patterns you miss, and operates alongside you.
 
@@ -20,18 +20,19 @@ Two files that turn Claude into a symbiotic agent:
 ```mermaid
 graph LR
     A[You] <-->|Symbiotic| B[Agent]
-    B -->|Reads| C[CLAUDE.md<br/>Who you are]
-    B -->|Reads| D[NOW.md<br/>Current state]
-    B -->|Updates| E[Memory Log<br/>Patterns over time]
-    B -->|Acts| F[Code/Files/Research]
-    E -.->|Part of| D
+    B -->|Reads| C[AGENTS.md<br/>Operations]
+    B -->|Reads| D[SOUL.md<br/>Personality]
+    B -->|Reads| E[USER.md<br/>Your profile]
+    B -->|Updates| F[NOW.md<br/>Current state]
+    B -->|Acts| G[Code/Files/Research]
     
+    style A fill:#2d3748,stroke:#4a5568,color:#fff
+    style B fill:#2d3748,stroke:#4a5568,color:#fff
     style C fill:#2d3748,stroke:#4a5568,color:#fff
     style D fill:#2d3748,stroke:#4a5568,color:#fff
     style E fill:#2d3748,stroke:#4a5568,color:#fff
-    style A fill:#2d3748,stroke:#4a5568,color:#fff
-    style B fill:#2d3748,stroke:#4a5568,color:#fff
     style F fill:#2d3748,stroke:#4a5568,color:#fff
+    style G fill:#2d3748,stroke:#4a5568,color:#fff
 ```
 
 **The Philosophy:** Symbiotic AI through transparency. All memory lives in files you control. The agent builds context over time, challenges your blind spots, and you see everything it remembers.
@@ -41,10 +42,10 @@ graph LR
 **One command:**
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/lout33/claude_life_assistant/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/lout33/ai-life-assistant/main/install.sh | bash
 ```
 
-Works with Claude Code, OpenCode, or as a local project. The script auto-detects your setup.
+Works with Claude Code, opencode, nanobot, or as a local project. The script auto-detects your setup.
 
 **Windows users:** Run in WSL or Git Bash.
 
@@ -53,32 +54,49 @@ Works with Claude Code, OpenCode, or as a local project. The script auto-detects
 **Option 1: Clone**
 
 ```bash
-git clone https://github.com/lout33/claude_life_assistant
-cd claude_life_assistant
+git clone https://github.com/lout33/ai-life-assistant
+cd ai-life-assistant
 ```
 
-Then open with Claude Code and start talking.
+Then open with your AI coding tool and start talking.
 
 **Option 2: Global Install (Claude Code)**
 
 ```bash
-cp CLAUDE.md NOW.md ~/.claude/
+mkdir -p ~/.claude
+cp AGENTS.md SOUL.md USER.md NOW.md ~/.claude/
+# Claude Code reads CLAUDE.md by default, so create it:
+cat AGENTS.md SOUL.md USER.md > ~/.claude/CLAUDE.md
 ```
 
-**Option 3: Global Install (OpenCode)**
+**Option 3: Global Install (opencode)**
 
 ```bash
-cp CLAUDE.md ~/.config/opencode/AGENTS.md
-cp NOW.md ~/.config/opencode/
+mkdir -p ~/.config/opencode
+cp AGENTS.md SOUL.md USER.md NOW.md ~/.config/opencode/
 ```
 
-*Note: Rename `CLAUDE.md` to `AGENTS.md` for OpenCode.*
+**Option 4: nanobot**
+
+Edit `~/.nanobot/config.json` and set workspace to your life assistant directory:
+
+```json
+{
+  "agents": {
+    "defaults": {
+      "workspace": "/path/to/your/ai-life-assistant"
+    }
+  }
+}
+```
+
+nanobot reads AGENTS.md, SOUL.md, USER.md, and NOW.md automatically.
 
 ## Quick Start
 
 After install, just start talking. That's it.
 
-The agent reads your files at session start. It knows your identity, your current projects, your patterns. No commands needed — it adapts to whatever you're doing.
+The agent reads your files at session start. It knows your identity, your current projects, your patterns. No commands needed. It adapts to whatever you're doing.
 
 ## Commands
 
@@ -93,22 +111,64 @@ Built-in commands for daily rituals:
 
 Just type the command. The agent handles the rest.
 
-## The 2-File System
+## The 4-File System
 
-| File | Purpose |
-|------|---------|
-| `CLAUDE.md` / `AGENTS.md` | Who you are, how you work, your known bugs |
-| `NOW.md` | Current mode, this week's actions, Memory Log |
+| File | Purpose | Stability |
+|------|---------|-----------|
+| `AGENTS.md` | Operations, rules, how the agent works | Stable |
+| `SOUL.md` | Agent personality, identity | Stable |
+| `USER.md` | Your profile, psychology, patterns | Stable |
+| `NOW.md` | Current state, queue, memory log | Dynamic |
 
-*Note: Claude Code uses `CLAUDE.md`, OpenCode uses `AGENTS.md`. The install script handles this automatically.*
+**Why 4 files?**
 
-**Why 2 files?**
+Separation of concerns:
+- **AGENTS.md** = How the system operates (rules, session protocol, file locations)
+- **SOUL.md** = Who the agent is (personality, stance, key questions)
+- **USER.md** = Who you are (identity, mission, psychology, bugs)
+- **NOW.md** = What's happening now (tasks, projects, memory log)
 
-Separation = clarity. CLAUDE.md is your operating system (identity, psychology, patterns). NOW.md is your current state (projects, tasks, memory). The agent reads both, updates NOW.md as you work.
+Stable files rarely change. NOW.md changes every session. The agent reads all four, updates NOW.md as you work.
 
 **Conversation > Documentation**
 
 You talk. The agent acts and maintains the files. No manual editing required (though you can if you want).
+
+## Interoperability
+
+This system works as a **single source of truth** across multiple AI frameworks:
+
+```
+┌─────────────────────────────────────────────────────┐
+│           Your Life Assistant Directory             │
+│  ┌──────────┐ ┌────────┐ ┌────────┐ ┌────────┐     │
+│  │ AGENTS.md│ │SOUL.md │ │USER.md │ │ NOW.md │     │
+│  └──────────┘ └────────┘ └────────┘ └────────┘     │
+└─────────────────────────────────────────────────────┘
+         │              │              │
+         ▼              ▼              ▼
+   ┌──────────┐  ┌──────────┐  ┌──────────┐
+   │Claude Code│  │ opencode │  │ nanobot  │
+   │           │  │          │  │(Telegram)│
+   └──────────┘  └──────────┘  └──────────┘
+```
+
+**The idea:** One directory, multiple interfaces. Use Claude Code for deep coding sessions, opencode for terminal work, nanobot for Telegram/cron automation. All reading from the same files.
+
+### Framework Compatibility
+
+| Framework | Bootstrap Files | Config Location |
+|-----------|-----------------|-----------------|
+| Claude Code | CLAUDE.md (concatenate the 4 files) | `~/.claude/` |
+| opencode | AGENTS.md, SOUL.md, USER.md, NOW.md | `~/.config/opencode/` or project root |
+| nanobot | AGENTS.md, SOUL.md, USER.md, NOW.md | Set `workspace` in config.json |
+
+### Memory Coexistence
+
+If using nanobot alongside other tools:
+- **NOW.md** remains your primary state/queue/log file
+- **nanobot's memory/** folder can coexist for its own notes
+- Both systems can read/write without conflict
 
 ## What Makes It Different
 
@@ -117,17 +177,17 @@ You talk. The agent acts and maintains the files. No manual editing required (th
 Most AI validates. This one calls you out.
 
 From a real conversation:
-> **AI:** "You find something valuable → People want it → You feel repulsed by the exchange → You give it away for free → You have no money → Repeat."
+> **AI:** "You find something valuable -> People want it -> You feel repulsed by the exchange -> You give it away for free -> You have no money -> Repeat."
 >
 > **AI:** "That's not idealism. That's self-punishment."
 
-The instruction is simple: *"No coddling. Quote his words back when off track."*
+The instruction is simple: *"No coddling. Quote the user's words back when off track."*
 
 ### It Remembers
 
-This isn't a one-off ChatGPT session. The agent has persistent memory — your values, your goals, your known bugs, your history.
+This isn't a one-off ChatGPT session. The agent has persistent memory: your values, your goals, your known bugs, your history.
 
-When it says "You did this with the Blender addon — paying customers, real traction, and you gave it away," it's not guessing. It remembered.
+When it says "You did this with the Blender addon, paying customers, real traction, and you gave it away," it's not guessing. It remembered.
 
 ### It Acts
 
@@ -136,7 +196,7 @@ Not just chat. The agent executes: writes code, researches, creates files, runs 
 ## How It Works (Data Flow)
 
 **Local:**
-- All your files (`CLAUDE.md`, `NOW.md`) are stored on your machine
+- All your files (`AGENTS.md`, `SOUL.md`, `USER.md`, `NOW.md`) are stored on your machine
 - You own and control all data
 - Safe to version control (but consider `.gitignore` for personal files)
 
@@ -177,10 +237,10 @@ The longer you use it, the better it gets.
 ## Examples
 
 Check `examples/` for real progressions:
-- **alex-founder** — Solo founder building SaaS, racing against runway
-- **maya-creator** — Marketing manager building content side hustle
-- **rick-developer** — Backend dev job hunting after layoff
-- **sam-student** — Career changer learning to code part-time
+- **alex-founder** - Solo founder building SaaS, racing against runway
+- **maya-creator** - Marketing manager building content side hustle
+- **rick-developer** - Backend dev job hunting after layoff
+- **sam-student** - Career changer learning to code part-time
 
 Each shows Week 1 to Month 3 evolution with Memory Log progression.
 
@@ -200,27 +260,28 @@ Each shows Week 1 to Month 3 evolution with Memory Log progression.
 
 ## Philosophy
 
-**Symbiotic > Assistive** — The agent operates with you, not for you
+**Symbiotic > Assistive** - The agent operates with you, not for you
 
-**Challenge > Validate** — Honest reflection beats comfortable agreement
+**Challenge > Validate** - Honest reflection beats comfortable agreement
 
-**Memory compounds** — The longer you use it, the better it gets
+**Memory compounds** - The longer you use it, the better it gets
 
-**Ship ugly** — Done beats perfect
+**Ship ugly** - Done beats perfect
 
 ## Advanced: Full Life OS
 
 This template covers the basics. My personal setup includes:
 
-- **Skills ecosystem** — Search, research, image generation, and more
-- **Agent delegation** — Spawn sub-agents for complex tasks
-- **Integrated journal** — Daily entries with AI pattern recognition
+- **Skills ecosystem** - Search, research, image generation, and more
+- **Agent delegation** - Spawn sub-agents for complex tasks
+- **Integrated journal** - Daily entries with AI pattern recognition
+- **Telegram/cron automation** - Daily reminders, check-ins via nanobot
 
 Interested in the full system? **Let me know** (feedback helps prioritize what to build next).
 
 ## Requirements
 
-- Claude Code CLI or OpenCode (or any Claude interface that supports custom instructions)
+- An AI coding interface (Claude Code, opencode, Cursor, or any LLM that supports custom instructions)
 - A folder for your life system
 
 ## Related Projects
@@ -246,8 +307,8 @@ Built on the belief that symbiotic AI means shared cognition, not supervision. T
 
 ---
 
-![GitHub stars](https://img.shields.io/github/stars/lout33/claude_life_assistant?style=social)
+![GitHub stars](https://img.shields.io/github/stars/lout33/ai-life-assistant?style=social)
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=lout33/claude_life_assistant&type=Date)](https://star-history.com/#lout33/claude_life_assistant&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=lout33/ai-life-assistant&type=Date)](https://star-history.com/#lout33/ai-life-assistant&Date)
