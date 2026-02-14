@@ -1,8 +1,8 @@
-# AI Life Assistant
+# Symbiotic AI
 
 A symbiotic AI agent that remembers everything, challenges you, and extends your cognition. Works across Claude Code, opencode, OpenClaw, and any LLM interface.
 
-<a href="https://www.youtube.com/watch?v=oBURNsNVU3Y"><img src="https://i.ibb.co/mCcVCc1m/whiteboard-evolution.jpg" alt="AI Life Assistant Demo" border="0"></a>
+<a href="https://www.youtube.com/watch?v=oBURNsNVU3Y"><img src="https://i.ibb.co/mCcVCc1m/whiteboard-evolution.jpg" alt="Symbiotic AI Demo" border="0"></a>
 
 [Watch the demo](https://www.youtube.com/watch?v=oBURNsNVU3Y)
 
@@ -35,14 +35,14 @@ The system gets smarter the longer you use it. Not because of AI improvements, b
 ## Installation
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/lout33/ai-life-assistant/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/lout33/symbiotic-ai/main/install.sh | bash
 ```
 
 Or clone and open with your AI coding tool:
 
 ```bash
-git clone https://github.com/lout33/ai-life-assistant
-cd ai-life-assistant
+git clone https://github.com/lout33/symbiotic-ai
+cd symbiotic-ai
 ```
 
 ## The System
@@ -159,4 +159,4 @@ Symbiotic > Assistive. Challenge > Validate. Memory compounds. Ship ugly.
 
 Created by [@lout33](https://github.com/lout33)
 
-![GitHub stars](https://img.shields.io/github/stars/lout33/ai-life-assistant?style=social)
+![GitHub stars](https://img.shields.io/github/stars/lout33/symbiotic-ai?style=social)

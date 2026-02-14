@@ -1,19 +1,19 @@
 #!/bin/bash
 
-# AI Life Assistant - One-liner installer
-# Usage: curl -fsSL https://raw.githubusercontent.com/lout33/ai-life-assistant/main/install.sh | bash
+# Symbiotic AI - One-liner installer
+# Usage: curl -fsSL https://raw.githubusercontent.com/lout33/symbiotic-ai/main/install.sh | bash
 
 set -e
 
-REPO_URL="https://raw.githubusercontent.com/lout33/ai-life-assistant/main"
-TMP_DIR="/tmp/ai_life_assistant_install"
+REPO_URL="https://raw.githubusercontent.com/lout33/symbiotic-ai/main"
+TMP_DIR="/tmp/symbiotic_ai_install"
 
 # Colors
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-echo "Downloading AI Life Assistant..."
+echo "Downloading Symbiotic AI..."
 echo ""
 
 # Create temp directory

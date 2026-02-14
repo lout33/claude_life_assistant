@@ -18,7 +18,7 @@ npm install -g openclaw@latest
 openclaw onboard --install-daemon
 ```
 
-The wizard walks you through setting up the gateway, workspace, and channels. When asked about workspace, point it to the directory containing your AI Life Assistant files.
+The wizard walks you through setting up the gateway, workspace, and channels. When asked about workspace, point it to the directory containing your Symbiotic AI files.
 
 Docs: [docs.openclaw.ai/start/getting-started](https://docs.openclaw.ai/start/getting-started)
 
