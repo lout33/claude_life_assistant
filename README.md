@@ -1,10 +1,30 @@
 # AI Life Assistant
 
-A symbiotic AI agent that remembers everything, challenges you, and extends your cognition. Works across Claude Code, opencode, nanobot, and any LLM interface.
+A symbiotic AI agent that remembers everything, challenges you, and extends your cognition. Works across Claude Code, opencode, OpenClaw, and any LLM interface.
 
 <a href="https://www.youtube.com/watch?v=oBURNsNVU3Y"><img src="https://i.ibb.co/mCcVCc1m/whiteboard-evolution.jpg" alt="AI Life Assistant Demo" border="0"></a>
 
 [Watch the demo](https://www.youtube.com/watch?v=oBURNsNVU3Y)
+
+## HEARTBEAT: Your AI Watches Your Screen
+
+The killer feature. Your AI monitors your screen activity, compares it against your tasks in NOW.md, and pings you on Telegram when you drift. Quiet when you're focused. Direct when you're not.
+
+```
+[14:30] DOING: VS Code - building landing page components
+SHOULD: Ship landing page
+DEADLINE: Feb 28 (14 days)
+Flow state. Keep going.
+```
+
+```
+[15:15] DOING: YouTube - watching programming streams (45 min)
+SHOULD: Ship landing page
+DEADLINE: Feb 28 (14 days)
+You know what you should be doing.
+```
+
+Powered by [OpenClaw](https://github.com/openclaw/openclaw) + [what-did-i-do](https://github.com/lout33/what-did-i-do) screen tracker. **[Setup guide →](guides/heartbeat-setup.md)**
 
 ## What This Is
 
@@ -46,6 +66,7 @@ The system grows with you. Just create the file. The agent discovers and uses it
 
 | File | Purpose | When to Add |
 |------|---------|-------------|
+| `HEARTBEAT.md` | Screen-aware accountability via Telegram ([setup guide](guides/heartbeat-setup.md)) | When you want your AI to watch your screen and keep you on track |
 | `WINS.md` | Shipped projects, milestones, lessons, pattern breaks | When you need evidence you're making progress |
 | `IDEAS.md` | Quick idea capture | When ideas come faster than you can act |
 | `COMMITMENTS.md` | Said vs Did tracking | When you notice patterns of not following through |
@@ -74,13 +95,13 @@ Commands work manually or scheduled via cron. See `commands/README.md`.
 
 One directory, multiple interfaces:
 
-| Framework | Config |
-|-----------|--------|
-| Claude Code | `~/.claude/CLAUDE.md` (concatenate the 4 files) |
-| opencode | `~/.config/opencode/` or project root |
-| nanobot | Set `workspace` in `~/.nanobot/config.json` |
+| Framework | Config | Best For |
+|-----------|--------|----------|
+| [OpenClaw](https://github.com/openclaw/openclaw) | Set `workspace` in `~/.openclaw/openclaw.json` | HEARTBEAT, Telegram, scheduled check-ins |
+| Claude Code | `~/.claude/CLAUDE.md` (concatenate the 4 files) | Deep coding sessions |
+| opencode | `~/.config/opencode/` or project root | Terminal-based sessions |
 
-Use Claude Code for deep coding, opencode for terminal, nanobot for Telegram/cron. All reading from the same files.
+All frameworks read from the same files. Use OpenClaw for always-on features (HEARTBEAT, cron, Telegram). Use Claude Code or opencode for interactive sessions.
 
 ## What Makes It Different
 
@@ -126,10 +147,11 @@ The longer you use it, the better it gets.
 
 Symbiotic > Assistive. Challenge > Validate. Memory compounds. Ship ugly.
 
-## Related Projects
+## The Ecosystem
 
 | Project | What it does |
 |---------|--------------|
+| [OpenClaw](https://github.com/openclaw/openclaw) | Personal AI assistant runtime. Powers HEARTBEAT, Telegram, cron. |
 | [what-did-i-do](https://github.com/lout33/what-did-i-do) | Passive screen tracker with Gemini Vision |
 | [writing-style-skill](https://github.com/lout33/writing-style-skill) | Make AI write like you |
 

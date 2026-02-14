@@ -25,12 +25,19 @@ curl -fsSL "$REPO_URL/SOUL.md" -o "$TMP_DIR/SOUL.md" || { echo "Failed to downlo
 curl -fsSL "$REPO_URL/USER.md" -o "$TMP_DIR/USER.md" || { echo "Failed to download USER.md"; exit 1; }
 curl -fsSL "$REPO_URL/NOW.md" -o "$TMP_DIR/NOW.md" || { echo "Failed to download NOW.md"; exit 1; }
 
+# Download optional files
+curl -fsSL "$REPO_URL/HEARTBEAT.md" -o "$TMP_DIR/HEARTBEAT.md" || { echo "Failed to download HEARTBEAT.md"; exit 1; }
+
 # Download commands
 mkdir -p "$TMP_DIR/commands"
 curl -fsSL "$REPO_URL/commands/start-day.md" -o "$TMP_DIR/commands/start-day.md" || { echo "Failed to download start-day.md"; exit 1; }
 curl -fsSL "$REPO_URL/commands/check-day.md" -o "$TMP_DIR/commands/check-day.md" || { echo "Failed to download check-day.md"; exit 1; }
 curl -fsSL "$REPO_URL/commands/end-day.md" -o "$TMP_DIR/commands/end-day.md" || { echo "Failed to download end-day.md"; exit 1; }
 curl -fsSL "$REPO_URL/commands/reflect.md" -o "$TMP_DIR/commands/reflect.md" || { echo "Failed to download reflect.md"; exit 1; }
+
+# Download guides
+mkdir -p "$TMP_DIR/guides"
+curl -fsSL "$REPO_URL/guides/heartbeat-setup.md" -o "$TMP_DIR/guides/heartbeat-setup.md" || { echo "Failed to download heartbeat-setup.md"; exit 1; }
 
 # Detect installed tools
 CLAUDE_CODE=false
@@ -194,6 +201,9 @@ copy_with_backup "$TMP_DIR/SOUL.md" "$TARGET/SOUL.md"
 copy_with_backup "$TMP_DIR/USER.md" "$TARGET/USER.md"
 copy_with_backup "$TMP_DIR/NOW.md" "$TARGET/NOW.md"
 
+# Copy HEARTBEAT.md
+copy_with_backup "$TMP_DIR/HEARTBEAT.md" "$TARGET/HEARTBEAT.md"
+
 # For Claude Code, also create combined CLAUDE.md
 if [ "$IS_CLAUDE_CODE" = true ]; then
     echo ""
@@ -217,6 +227,12 @@ mkdir -p "$COMMANDS_DIR"
 cp "$TMP_DIR/commands/"*.md "$COMMANDS_DIR/"
 echo -e "${GREEN}+ Copied commands (start-day, check-day, end-day, reflect)${NC}"
 
+# Copy guides
+GUIDES_DIR="$TARGET/guides"
+mkdir -p "$GUIDES_DIR"
+cp "$TMP_DIR/guides/"*.md "$GUIDES_DIR/"
+echo -e "${GREEN}+ Copied guides (heartbeat-setup)${NC}"
+
 # nanobot hint
 if [ "$NANOBOT" = true ]; then
     echo ""
@@ -235,13 +251,18 @@ echo "============================================================"
 echo ""
 echo "Your symbiotic agent is ready."
 echo ""
-echo "Four files power the system:"
-echo "  AGENTS.md  - Operations, rules, how the agent works"
-echo "  SOUL.md    - Agent personality and identity"
-echo "  USER.md    - Your profile, psychology, patterns"
-echo "  NOW.md     - Current state, projects, memory log"
+echo "Core files:"
+echo "  AGENTS.md     - Operations, rules, how the agent works"
+echo "  SOUL.md       - Agent personality and identity"
+echo "  USER.md       - Your profile, psychology, patterns"
+echo "  NOW.md        - Current state, projects, memory log"
 echo ""
-echo "Commands available:"
+echo "HEARTBEAT (screen-aware accountability):"
+echo "  HEARTBEAT.md  - Watches your screen, pings you on Telegram"
+echo "  Setup guide:  guides/heartbeat-setup.md"
+echo "  Requires:     OpenClaw + Telegram + what-did-i-do"
+echo ""
+echo "Commands:"
 echo "  /start-day    - Morning kickoff, set MIT"
 echo "  /check-day    - Quick accountability check-in"
 echo "  /end-day      - Evening review, capture wins"
